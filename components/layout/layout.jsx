@@ -29,7 +29,7 @@ export default function Layout({ children }) {
           </a>
 
           <a
-            href="/"
+            href="/board/write"
             className={styles.card}
           >
             <h2>
