@@ -12,10 +12,10 @@ export default function Edit (){
     const [post, setPost] = useState({
         title: '',
         content: '',
-        boardId: 1
+        id:''
     });
     
-    const {title, content, boardId} = post;
+    const {title, content, id} = post;
 
     const postSetting = useCallback(() => {
         if(editPost){
@@ -23,6 +23,7 @@ export default function Edit (){
                 ...post,
                 title: editPost.title,
                 content: editPost.content,
+                id: editPost.id
             }))
         }
     },[])
@@ -41,12 +42,13 @@ export default function Edit (){
     } 
 
     const putPost = useMutation((newPost) => {
-        axios.put(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_PUT_POST}`, newPost)}
+        axios.put(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST+'/'+newPost.id}`, newPost)}
         , {
         onSuccess: () => {
             setPost({
                 title: '',
-                content: ''
+                content: '',
+                id:''
               });
 
             router.push('/board/posts');
@@ -64,10 +66,8 @@ export default function Edit (){
             const newPost = {
                 title,
                 content,
-                boardId
+                id
             };
-            
-            console.log("뉴확인: " + newPost.boardId + " " + newPost.title + " " + newPost.content);
 
             putPost.mutate(newPost);
 
