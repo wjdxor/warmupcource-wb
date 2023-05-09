@@ -66,28 +66,28 @@ export default function Write (){
         </div>
         <div>
             <div>
-                <label htmlFor='title' style={{textAlign: 'left'}}>Title</label>&nbsp;
+                <label htmlFor='title' >Title</label>&nbsp;
                 <input  name="title"
+                        id="title"
                         type="text" 
                         placeholder='제목을 입력하세요' 
                         value={post.title}
                         onChange={onChange}
-                        style={{display:'flex', alignItems: 'center', 
-                                padding: '3px', margin:'5px 0 5px 0'}}
+                        style={{display:'flex', padding: '3px', margin:'5px 0 5px 0'}}
                         size={100}/>
             </div>
             <div>
-                <label htmlFor='content'  style={{textAlign: 'left'}}>Content</label>&nbsp;
+                <label htmlFor='content' >Content</label>&nbsp;
                 <textarea  name="content"
-                        type="text" 
-                        placeholder='내용을 입력하세요' 
-                        value={post.content}
-                        onChange={onChange}
-                        style={{display:'flex', alignItems: 'center', 
-                                resize: 'none', padding: '3px', 
-                                width: '100%', height: '100px',
-                                margin:'5px 0 5px 0' }}
-                        rows={5}/>
+                           id="content"
+                           type="text" 
+                           placeholder='내용을 입력하세요' 
+                           value={post.content}
+                           onChange={onChange}
+                           style={{display:'flex', resize: 'none', 
+                                   padding: '3px', width: '100%', 
+                                   height: '100px',margin:'5px 0 5px 0' }}
+                           rows={5}/>
             </div>
             <button onClick={onSubmit}
                     style={{padding: '3px'}}>

@@ -14,8 +14,7 @@ export default function Posts() {
   const [perPage, setPerPage] = useState(5); // 페이지 당 게시물 수
   const [page, setPage] = useState(1); // 현재 페이지 번호
   const offset = (page - 1) * perPage; // 첫 게시물의 위치
-  const [search, setSearch] = useState();
-  const [items, setItems] = useState([]);
+  const [search, setSearch] = useState('');
 
   const { isLoading, isError, data, error, refetch } = useQuery(["posts"], () =>
     axios
@@ -29,25 +28,12 @@ export default function Posts() {
 
   console.log(data)
 
-  //검색
-  const onChange = (e) => {
-    setSearch(e.target.value);
-    console.log(search);
-  }
-
-
-
   return (
     <>
         <div className={styles.description}>
           <p>
             <code className={styles.code}>Posts</code>
           </p>
-          <div>
-            <input type='text' placeholder='Search'
-                   value={search} onChange={onChange}
-                   name="search" style={{padding:'3px'}}/>
-          </div>
           <div>
             <a
               href="/"
@@ -60,9 +46,10 @@ export default function Posts() {
           <table style={{textAlign: 'center'}}>
             <thead>
             <tr>
-              <th style={{padding: '20px'}}>No.</th>
-              <th>TITLE</th>
-              <th>WRITER</th>
+              <th>No.</th>
+              <th style={{padding: '20px'}}>TITLE</th>
+              <th style={{paddingRight: '20px'}}>WRITER</th>
+              <th>DATE</th>
             </tr>
             </thead>
             {
@@ -79,7 +66,8 @@ export default function Posts() {
                         {post.title}
                       </Link>
                     </td>
-                  <td>{post.writer? post.writer: "알수없는 사용자"}</td>
+                  <td style={{paddingRight: '20px'}}>{post.writer? post.writer: "알수없는 사용자"}</td>
+                  <td>{post.createdAt.substr(0,10)}</td>
                 </tr> 
               </tbody>
               ))
