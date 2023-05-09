@@ -1,10 +1,8 @@
 import styles from '@/styles/Home.module.css'
-import { RecoilRoot } from 'recoil'
 
 export default function Home() {
   return (
     <>
-    <RecoilRoot>
         <div className={styles.description}>
           <p>
             Let's Warm up!!&nbsp;
@@ -20,7 +18,6 @@ export default function Home() {
             </a>
           </div>
         </div>
-    <RecoilRoot/>
     </>
   )
 }
