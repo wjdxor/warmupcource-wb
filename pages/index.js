@@ -1,13 +1,21 @@
 import styles from '@/styles/Home.module.css'
 import {useRecoilState} from "recoil";
 import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
+import {useEffect, useState} from "react";
 
 export default function Home() {
+
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState)
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState)
     const [expireAt, setExpireAt] = useRecoilState(tokenExpireState)
     const [isLogin, setIsLogin] = useRecoilState(isLoggedIn)
     const [userId, setUserId] = useRecoilState(isLoggedIn)
+
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
 
     const handleLogout = () => {
@@ -25,13 +33,12 @@ export default function Home() {
                     <code className={styles.code}>Next.JS</code>
                 </p>
                 <div>
-                    {isLogin ? (
+                    {mounted && isLogin ? (
                         <a onClick={handleLogout} style={{ cursor: 'pointer' }}>
                             Logout
                         </a>
                     ) : (
                         <a href="/user/login">
-                            {/* By MyDATA */}
                             Login
                         </a>
                     )}
