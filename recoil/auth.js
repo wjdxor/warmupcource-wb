@@ -14,8 +14,21 @@ export const refreshTokenState = atom({
     effects_UNSTABLE: [persistAtom]
 })
 
+export const tokenExpireState = atom({
+    key: 'tokenExpire',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})
+
+
 export const isLoggedIn = atom({
     key: 'isLoggedIn',
     default: false,
+    effects_UNSTABLE: [persistAtom]
+})
+
+export const userId = atom({
+    key: 'userId',
+    default: '',
     effects_UNSTABLE: [persistAtom]
 })
