@@ -37,6 +37,30 @@ export default function Posts() {
 
         },
         {
+            // onSuccess: (data) => {
+            //     console.log(data)
+            // },
+            onError: async (error) => {
+                if (error.response.status === 401) {
+                    try {
+                        const res = await axios.post(
+                            `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`,
+                            {refreshToken: refreshToken}
+                        );
+                        await setAccessToken(res.data.accessToken);
+                        await refetch();
+                    } catch (err) {
+                        if (err.response.status === 400) {
+                            router.push('/user/login');
+                        } else {
+                            console.error(err);
+                        }
+                    }
+                } else {
+                    alert("로그인이 필요합니다.");
+                    router.push('/user/login');
+                }
+            },
             retry: (failureCount, error) => {
                 if (error.response.status === 401) {
                     const getNewToken = axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`, {
@@ -45,7 +69,6 @@ export default function Posts() {
                         setAccessToken(res.data.accessToken);
                         return true; // 새로운 토큰으로 다시 시도
                     }).catch(() => {
-                        // 리프레시 토큰도 만료된 경우
                         if (err.response.status === 400) {
                             router.push('/user/login');
                         } else {
