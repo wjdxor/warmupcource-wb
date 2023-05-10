@@ -40,6 +40,7 @@ export default function Posts() {
             // onSuccess: (data) => {
             //     console.log(data)
             // },
+
             onError: async (error) => {
                 if (error.response.status === 401) {
                     try {
@@ -61,22 +62,22 @@ export default function Posts() {
                     router.push('/user/login');
                 }
             },
-            retry: (failureCount, error) => {
-                if (error.response.status === 401) {
-                    const getNewToken = axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`, {
-                        refreshToken: refreshToken,
-                    }).then((res) => {
-                        setAccessToken(res.data.accessToken);
-                        return true; // 새로운 토큰으로 다시 시도
-                    }).catch(() => {
-                        if (err.response.status === 400) {
-                            router.push('/user/login');
-                        } else {
-                            console.error(err);
-                        }
-                    });
-                }
-            }
+            // retry: (failureCount, error) => {
+            //     if (error.response.status === 401) {
+            //         const getNewToken = axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`, {
+            //             refreshToken: refreshToken,
+            //         }).then((res) => {
+            //             setAccessToken(res.data.accessToken);
+            //             return true; // 새로운 토큰으로 다시 시도
+            //         }).catch(() => {
+            //             if (err.response.status === 400) {
+            //                 router.push('/user/login');
+            //             } else {
+            //                 console.error(err);
+            //             }
+            //         });
+            //     }
+            // }
         }
     );
 
