@@ -9,8 +9,8 @@ import Pagination from '@/components/Pagination';
 import {useRecoilState, useRecoilValue} from "recoil";
 import {accessTokenState, refreshTokenState, tokenExpireState} from "@/recoil/auth";
 import {console} from "next/dist/compiled/@edge-runtime/primitives/console";
-import apiWithAuth from "@/util/axios-util";
 import moment from "moment/moment";
+import { boardPosts } from '@/recoil/boardPost';
 
 export default function Posts() {
 
@@ -25,6 +25,7 @@ export default function Posts() {
     const refreshToken = useRecoilValue(refreshTokenState)
     const expireAt = useRecoilValue(tokenExpireState)
 
+    const [posts, setPosts] = useRecoilState(boardPosts);
 
     // const {data} = useQuery(["posts"], () => {
     const {isLoading, isError, data, error, refetch} = useQuery(["posts"], async () => {
@@ -32,7 +33,7 @@ export default function Posts() {
             }
             return axios.get(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_GET_POSTS}`
                 , {headers: {Authorization: `Bearer ${accessToken}`}}
-            ).then((res) => res.data)
+            ).then(res => setPosts(res.data))
 
 
         },
@@ -112,14 +113,15 @@ export default function Posts() {
                     </tr>
                     </thead>
                     {
-                        data?.slice(offset, offset + perPage)?.map(post => (
+                        posts?.slice(offset, offset + perPage)?.map(post => (
                             <tbody key={post.id}>
                             <tr>
                                 <td>{post.id}</td>
                                 <td style={{textDecoration: 'underline', padding: '0 20px 0 20px'}}>
                                     <Link href={{
                                         pathname: './view',
-                                        query: {post: JSON.stringify(post)}
+                                         query: {post: JSON.stringify(post)}
+                                       // query: {id: post.id}
                                     }}
                                           as={`./view?${post.id}`}>
                                         {post.title}
