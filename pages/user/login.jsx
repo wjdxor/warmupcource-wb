@@ -3,10 +3,18 @@ import {useRouter} from 'next/router';
 import {useState} from "react";
 import {useMutation} from "react-query";
 import axios from "axios";
+import {useRecoilState, useSetRecoilState} from "recoil";
+import {accessTokenState, refreshTokenState, isLoggedIn, userId, tokenExpireState} from "@/recoil/auth";
 
 
 export default function Login() {
     const router = useRouter();
+
+    const setAccessToken = useSetRecoilState(accessTokenState);
+    const setRefreshToken = useSetRecoilState(refreshTokenState);
+    const setUserId = useSetRecoilState(userId);
+    const setTokenExpire = useSetRecoilState(tokenExpireState);
+    const [loggedIn, setLoggedIn] = useRecoilState(isLoggedIn);
 
     const [loginReg, SetLoginReg] = useState({
         loginId: '',
@@ -30,8 +38,13 @@ export default function Login() {
         },
         {
             onSuccess: (data) => {
-                console.log(data);
+                setAccessToken(data.data.accessToken)
+                setRefreshToken(data.data.refreshToken)
+                setUserId(data.data.userId)
+                setTokenExpire(data.data.accessTokenExpiresAt)
+                setLoggedIn(true)
                 router.push('/');
+                console.log(data);
             },
             onError: (error) => {
                 alert(error.response.data.message);
