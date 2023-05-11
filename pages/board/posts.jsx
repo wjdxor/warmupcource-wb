@@ -7,7 +7,7 @@ import Link from 'next/link';
 import {useState} from 'react';
 import Pagination from '@/components/Pagination';
 import {useRecoilState, useRecoilValue} from "recoil";
-import {accessTokenState, refreshTokenState, tokenExpireState} from "@/recoil/auth";
+import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
 import {console} from "next/dist/compiled/@edge-runtime/primitives/console";
 import apiWithAuth from "@/util/axios-util";
 import moment from "moment/moment";
@@ -22,6 +22,7 @@ export default function Posts() {
     const [search, setSearch] = useState('');
 
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState)
+    const [isLogIn, setIsLogIn] = useRecoilState(isLoggedIn)
     const refreshToken = useRecoilValue(refreshTokenState)
     const expireAt = useRecoilValue(tokenExpireState)
 
@@ -29,6 +30,7 @@ export default function Posts() {
     // const {data} = useQuery(["posts"], () => {
     const {isLoading, isError, data, error, refetch} = useQuery(["posts"], async () => {
             if (moment(expireAt).diff(moment()) < 0) {
+
             }
             return axios.get(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_GET_POSTS}`
                 , {headers: {Authorization: `Bearer ${accessToken}`}}
@@ -52,6 +54,7 @@ export default function Posts() {
                         await refetch();
                     } catch (err) {
                         if (err.response.status === 400) {
+                            setIsLogIn(false);
                             router.push('/user/login');
                         } else {
                             console.error(err);
@@ -59,9 +62,11 @@ export default function Posts() {
                     }
                 } else {
                     alert("로그인이 필요합니다.");
+                    setIsLogIn(false);
                     router.push('/user/login');
                 }
             },
+            retry: 0,
             // retry: (failureCount, error) => {
             //     if (error.response.status === 401) {
             //         const getNewToken = axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`, {
