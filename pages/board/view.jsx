@@ -1,15 +1,26 @@
 import styles from '@/styles/Home.module.css'
 import { Margarine } from 'next/font/google';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation } from 'react-query';
 import axios from 'axios';
+import { useRecoilValue } from 'recoil';
+import { postByIdSelector } from '@/recoil/boardPost';
 
 export default function View (){
     const router = useRouter();
     const { query } = useRouter();
     const post = JSON.parse(query.post);
+    const id = post.id;
 
+    const thisPost = useRecoilValue(postByIdSelector(Number(id)));
+
+    // const thisPost = useRecoilValue(
+    //     useMemo(() => boardPosts.find((post) => post.id === Number(id)), [id])
+    // );
+    
+    // console.log(post.title)
+    
     //수정하기
     const onEdit = () => {
         router.push({
@@ -49,9 +60,9 @@ export default function View (){
             <hr/>
             <div style={{margin: '5px'}}>{post.content}</div>
             <div style={{marginTop: '20px'}}>
-            <button onClick={onEdit}>수정하기</button>&nbsp;
-            <button onClick={onDelet}>삭제하기</button>
-        </div>
+                <button onClick={onEdit}>수정하기</button>&nbsp;
+                <button onClick={onDelet}>삭제하기</button>
+            </div>
         </div>
 
         </>
