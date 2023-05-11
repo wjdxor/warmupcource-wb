@@ -1,4 +1,4 @@
-import { atom, selector } from "recoil";
+import { atom, selectorFamily } from "recoil";
 
 
 export const boardPosts = atom({
@@ -6,23 +6,20 @@ export const boardPosts = atom({
     default: []
 });
 
-export const postByIdSelector = selector({
+// view
+export const postByIdSelector = selectorFamily({
   key: 'postByIdSelector',
-  get: ({ get }) => (id) => {
+  get: (id) => ({ get }) => {
     const posts = get(boardPosts);
     return posts.find((post) => post.id === id);
   },
 });
 
-// export const boardPosts = atomFamily({
-//   key: 'boardPosts',
-//   default: [],
-// });
+// write
+export const writePost = selectorFamily({
+  key: 'writePost',
+  set: ({ set }, newPost) => {
+    
+  }
+});
 
-// export const postByIdSelector = selectorFamily({
-//     key: 'postByIdSelector',
-//     get: (id) => ({ get }) => {
-//       const posts = get(boardPosts);
-//       return posts.find((post) => post.id === id);
-//     },
-//   });

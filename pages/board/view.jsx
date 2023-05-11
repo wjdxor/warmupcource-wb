@@ -10,16 +10,9 @@ import { postByIdSelector } from '@/recoil/boardPost';
 export default function View (){
     const router = useRouter();
     const { query } = useRouter();
-    const post = JSON.parse(query.post);
-    const id = post.id;
+    const id = query.id;
 
-    const thisPost = useRecoilValue(postByIdSelector(Number(id)));
-
-    // const thisPost = useRecoilValue(
-    //     useMemo(() => boardPosts.find((post) => post.id === Number(id)), [id])
-    // );
-    
-    // console.log(post.title)
+    const post = useRecoilValue(postByIdSelector(Number(id)));
     
     //수정하기
     const onEdit = () => {

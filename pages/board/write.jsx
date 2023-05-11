@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import axios from 'axios';
+import { useSetRecoilState } from 'recoil';
+import { boardPosts } from '@/recoil/boardPost';
 
 export default function Write (){
     const router = useRouter();
@@ -14,7 +16,8 @@ export default function Write (){
     });
     
     const {title, content, boardId} = post;
-
+    const setPosts = useSetRecoilState(boardPosts);
+    
     const onChange = (e) => {
         const{value, name} = e.target
         setPost({

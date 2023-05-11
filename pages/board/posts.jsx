@@ -120,8 +120,7 @@ export default function Posts() {
                                 <td style={{textDecoration: 'underline', padding: '0 20px 0 20px'}}>
                                     <Link href={{
                                         pathname: './view',
-                                         query: {post: JSON.stringify(post)}
-                                       // query: {id: post.id}
+                                        query: {id: post.id}
                                     }}
                                           as={`./view?${post.id}`}>
                                         {post.title}
