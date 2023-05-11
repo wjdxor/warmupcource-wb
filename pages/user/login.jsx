@@ -78,7 +78,7 @@ export default function Login() {
                        placeholder="아이디를 입력하세요"
                        style={{padding: '3px', marginBottom: '10px', textAlign: 'center'}}/>
                 <br/>
-                <input type="text" name="loginPw"
+                <input type="password" name="loginPw"
                        value={loginPw} onChange={onChangeLogin}
                        placeholder="비밀번호를 입력하세요"
                        style={{padding: '3px', marginBottom: '15px', textAlign: 'center'}}/>
