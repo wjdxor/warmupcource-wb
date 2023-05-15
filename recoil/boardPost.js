@@ -1,4 +1,4 @@
-import { atom, selector } from "recoil";
+import { atom, selector, selectorFamily } from "recoil";
 
 
 export const boardPosts = atom({
@@ -6,23 +6,24 @@ export const boardPosts = atom({
     default: []
 });
 
-export const postByIdSelector = selector({
+// postList
+// export const postList = selector({
+//   key: 'postList',
+//   get:  async ({ get}) => {
+//     get(boardPosts);
+//     const response = axios.get(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_GET_POSTS}`
+//                             , {headers: {Authorization: `Bearer ${accessToken}`}})
+//     return response.data;
+//   }
+// });
+
+
+// view
+export const postByIdSelector = selectorFamily({
   key: 'postByIdSelector',
-  get: ({ get }) => (id) => {
+  get: (id) => ({ get }) => {
     const posts = get(boardPosts);
     return posts.find((post) => post.id === id);
   },
 });
 
-// export const boardPosts = atomFamily({
-//   key: 'boardPosts',
-//   default: [],
-// });
-
-// export const postByIdSelector = selectorFamily({
-//     key: 'postByIdSelector',
-//     get: (id) => ({ get }) => {
-//       const posts = get(boardPosts);
-//       return posts.find((post) => post.id === id);
-//     },
-//   });

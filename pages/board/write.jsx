@@ -3,6 +3,9 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import axios from 'axios';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { boardPosts } from '@/recoil/boardPost';
+import { accessTokenState } from '@/recoil/auth';
 
 export default function Write (){
     const router = useRouter();
@@ -14,6 +17,7 @@ export default function Write (){
     });
     
     const {title, content, boardId} = post;
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 
     const onChange = (e) => {
         const{value, name} = e.target
@@ -24,7 +28,8 @@ export default function Write (){
     } 
 
     const sendPost = useMutation((newPost) => {
-        axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST}`, newPost)}
+        axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST}`, newPost
+        , {headers: {Authorization: `Bearer ${accessToken}`}})}
         , {
         onSuccess: () => {
             setPost({
@@ -40,7 +45,7 @@ export default function Write (){
     })
 
     const onSubmit = (e) =>{
-        if (post.title && post.content){          
+        if (post){          
             const newPost = {
                 title,
                 content,

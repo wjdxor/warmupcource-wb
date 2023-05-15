@@ -4,23 +4,18 @@ import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import { useMutation } from 'react-query';
 import axios from 'axios';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { postByIdSelector } from '@/recoil/boardPost';
+import { accessTokenState } from '@/recoil/auth';
 
 export default function View (){
     const router = useRouter();
     const { query } = useRouter();
-    const post = JSON.parse(query.post);
-    const id = post.id;
+    const id = query.id;
 
-    const thisPost = useRecoilValue(postByIdSelector(Number(id)));
+    const post = useRecoilValue(postByIdSelector(Number(id)));
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 
-    // const thisPost = useRecoilValue(
-    //     useMemo(() => boardPosts.find((post) => post.id === Number(id)), [id])
-    // );
-    
-    // console.log(post.title)
-    
     //수정하기
     const onEdit = () => {
         router.push({
@@ -31,15 +26,18 @@ export default function View (){
 
     //삭제하기
     const delPost = useMutation((post) => {
-        axios.delete(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST+'/'+post.id}`)}
-        , {
-        onSuccess: () => {
-            router.push('/board/posts');
-        },
-        onError: () => {
-            alert("실패");
+        axios.delete(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST+'/'+post.id}`
+            , {headers: {Authorization: `Bearer ${accessToken}`}})
         }
-     })
+        , {
+            onSuccess: () => {
+                router.push('/board/posts');
+            },
+            onError: () => {
+                alert("실패");
+            }
+        }
+    );
 
     const onDelet = () => {
         delPost.mutate(post);
