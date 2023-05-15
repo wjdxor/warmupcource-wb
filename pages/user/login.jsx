@@ -5,10 +5,12 @@ import {useMutation} from "react-query";
 import axios from "axios";
 import {useRecoilState, useSetRecoilState} from "recoil";
 import {accessTokenState, refreshTokenState, isLoggedIn, userId, tokenExpireState} from "@/recoil/auth";
+import {Cookies} from "react-cookie";
 
 
 export default function Login() {
     const router = useRouter();
+    const cookies = new Cookies();
 
     const setAccessToken = useSetRecoilState(accessTokenState);
     const setRefreshToken = useSetRecoilState(refreshTokenState);
@@ -43,6 +45,10 @@ export default function Login() {
                 setUserId(data.data.userId)
                 setTokenExpire(data.data.accessTokenExpiresAt)
                 setLoggedIn(true)
+                cookies.set('refreshToken', data.data.refreshToken, {
+                    sameSite: 'strict',
+                    path: '/'
+                })
                 router.push('/');
                 console.log(data);
             },
