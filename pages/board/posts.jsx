@@ -10,7 +10,7 @@ import {useRecoilState, useRecoilValue} from "recoil";
 import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
 import {console} from "next/dist/compiled/@edge-runtime/primitives/console";
 import moment from "moment/moment";
-import { boardPosts } from '@/recoil/boardPost';
+import {boardPosts} from '@/recoil/boardPost';
 
 export default function Posts() {
 
@@ -46,18 +46,25 @@ export default function Posts() {
                 console.log("error");
                 if (error.response.status === 401) {
                     try {
+                        // cookie에 저장된 refresh token으로 access token 재발급
                         const res = await axios.post(
-                            `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`,
-                            {refreshToken: refreshToken}
+                            `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
+                            {},
+                            {
+                                withCredentials: true,
+                            }
                         );
                         await setAccessToken(res.data.accessToken);
                         await refetch();
                     } catch (err) {
-                        if (err.response.status === 400) {
+                        if (err.response?.status === 400) {
                             setIsLogIn(false);
+                            alert("refreshToken이 만료되었습니다.")
                             router.push('/user/login');
                         } else {
                             console.error(err);
+                            setIsLogIn(false);
+                            router.push('/user/login');
                         }
                     }
                 } else {
