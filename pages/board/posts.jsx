@@ -34,8 +34,6 @@ export default function Posts() {
             return axios.get(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_GET_POSTS}`
                 , {headers: {Authorization: `Bearer ${accessToken}`}}
             ).then(res => setPosts(res.data))
-
-
         },
         {
             // onSuccess: (data) => {
@@ -43,6 +41,7 @@ export default function Posts() {
             // },
 
             onError: async (error) => {
+                console.log("error");
                 if (error.response.status === 401) {
                     try {
                         const res = await axios.post(
@@ -64,6 +63,7 @@ export default function Posts() {
                 }
             },
             // retry: (failureCount, error) => {
+            //     console.log("retry");
             //     if (error.response.status === 401) {
             //         const getNewToken = axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`, {
             //             refreshToken: refreshToken,

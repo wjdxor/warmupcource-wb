@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import axios from 'axios';
+import { useRecoilState } from 'recoil';
+import { accessTokenState } from '@/recoil/auth';
 
 export default function Edit (){
     const router = useRouter();
@@ -16,6 +18,7 @@ export default function Edit (){
     });
     
     const {title, content, id} = post;
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 
     const postSetting = useCallback(() => {
         if(editPost){
@@ -42,20 +45,21 @@ export default function Edit (){
     } 
 
     const putPost = useMutation((newPost) => {
-        axios.put(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST+'/'+newPost.id}`, newPost)}
-        , {
-        onSuccess: () => {
-            setPost({
-                title: '',
-                content: '',
-                id:''
-              });
+        axios.put(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST+'/'+newPost.id}`, newPost
+            , {headers: {Authorization: `Bearer ${accessToken}`}})}
+            , {
+            onSuccess: () => {
+                setPost({
+                    title: '',
+                    content: '',
+                    id:''
+                });
 
-            router.push('/board/posts');
-        },
-        onError: () => {
-            alert("실패");
-        }
+                router.push('/board/posts');
+            },
+            onError: () => {
+                alert("실패");
+            }
     })
 
 
