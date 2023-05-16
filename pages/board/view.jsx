@@ -5,13 +5,14 @@ import { useMutation } from 'react-query';
 import axios from 'axios';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { postByIdSelector } from '@/recoil/boardPost';
-import { accessTokenState } from '@/recoil/auth';
+import { accessTokenState, userId } from '@/recoil/auth';
 
 export default function View (){
     const router = useRouter();
     const { query } = useRouter();
     const id = query.id;
 
+    const user = useRecoilValue(userId);
     const post = useRecoilValue(postByIdSelector(Number(id)));
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 
@@ -82,10 +83,12 @@ export default function View (){
             <div style={{margin: '5px'}}>{post.title}</div>
             <hr/>
             <div style={{margin: '5px'}}>{post.content}</div>
-            <div style={{marginTop: '20px'}}>
-                <button onClick={onEdit}>수정하기</button>&nbsp;
-                <button onClick={onDelet}>삭제하기</button>
-            </div>
+            {user === post.writer && 
+                <div style={{marginTop: '20px'}}>
+                    <button onClick={onEdit}>수정하기</button>&nbsp;
+                    <button onClick={onDelet}>삭제하기</button>
+                </div>
+            }
         </div>
 
         </>
