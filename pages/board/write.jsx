@@ -4,11 +4,10 @@ import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import axios from 'axios';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { accessTokenState, isLoggedIn } from '@/recoil/auth';
+import { accessTokenState, isLoggedIn, refreshTokenState } from '@/recoil/auth';
 
 export default function Write (){
     const router = useRouter();
-
     const [post, setPost] = useState({
         title: '',
         content: '',
@@ -18,12 +17,13 @@ export default function Write (){
     const {title, content, boardId} = post;
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const checkLogIn = useRecoilValue(isLoggedIn);
-
+    const refreshToken = useRecoilValue(refreshTokenState);
     const newPost = {
         title,
         content,
         boardId
     };
+    
     useEffect(() => {
         if(!checkLogIn){
             router.push('/user/login');
@@ -56,14 +56,9 @@ export default function Write (){
                 if (error.response.status === 401) {
                     console.log("401");
                     try {
-                        // cookie에 저장된 refresh token으로 access token 재발급
-                        console.log(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`);
                         const res = await axios.post(
                             `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
-                            {},
-                            {
-                                withCredentials: true,
-                            }
+                            {refreshToken: refreshToken}
                         );
                         await setAccessToken(res.data.accessToken);
                         await refetch();
@@ -71,11 +66,10 @@ export default function Write (){
                         if (err.response?.status === 400) {
                             console.log("400");
                             setIsLogIn(false);
-                            alert("refreshToken이 만료되었습니다.")
                             router.push('/user/login');
                         } else {
+                            console.log("else에러");
                             console.error(err);
-                            setIsLogIn(false);
                             router.push('/user/login');
                         }
                     }
