@@ -145,8 +145,8 @@ export default function Posts() {
                         ))
                     }
                 </table>
-                {data &&
-                    <Pagination total={data.length} perPage={perPage}
+                {posts &&
+                    <Pagination total={posts.length} perPage={perPage}
                                 page={page} setPage={setPage}/>}
             </div>
         </>
