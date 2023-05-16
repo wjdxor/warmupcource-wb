@@ -46,25 +46,18 @@ export default function Posts() {
                 console.log("error");
                 if (error.response.status === 401) {
                     try {
-                        // cookie에 저장된 refresh token으로 access token 재발급
                         const res = await axios.post(
-                            `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
-                            {},
-                            {
-                                withCredentials: true,
-                            }
+                            `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`,
+                            {refreshToken: refreshToken}
                         );
                         await setAccessToken(res.data.accessToken);
                         await refetch();
                     } catch (err) {
-                        if (err.response?.status === 400) {
+                        if (err.response.status === 400) {
                             setIsLogIn(false);
-                            alert("refreshToken이 만료되었습니다.")
                             router.push('/user/login');
                         } else {
                             console.error(err);
-                            setIsLogIn(false);
-                            router.push('/user/login');
                         }
                     }
                 } else {
