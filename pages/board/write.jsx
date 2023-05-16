@@ -1,11 +1,10 @@
 import styles from '@/styles/Home.module.css'
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import axios from 'axios';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { boardPosts } from '@/recoil/boardPost';
-import { accessTokenState } from '@/recoil/auth';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { accessTokenState, isLoggedIn } from '@/recoil/auth';
 
 export default function Write (){
     const router = useRouter();
@@ -18,6 +17,18 @@ export default function Write (){
     
     const {title, content, boardId} = post;
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const checkLogIn = useRecoilValue(isLoggedIn);
+
+    const newPost = {
+        title,
+        content,
+        boardId
+    };
+    useEffect(() => {
+        if(!checkLogIn){
+            router.push('/user/login');
+        }
+    });
 
     const onChange = (e) => {
         const{value, name} = e.target
@@ -26,31 +37,61 @@ export default function Write (){
             [name] : value,
         });
     } 
-
-    const sendPost = useMutation((newPost) => {
-        axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST}`, newPost
-        , {headers: {Authorization: `Bearer ${accessToken}`}})}
-        , {
-        onSuccess: () => {
-            setPost({
-                title: '',
-                content: ''
-              });
-
-            router.push('/board/posts');
+    
+    const sendPost = useMutation('newPost', async () => {
+        return axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST}`, newPost
+            , {headers: {Authorization: `Bearer ${accessToken}`}})
         },
-        onError: () => {
-            alert("실패");
+        {
+            onSuccess: () => {
+                console.log("Write success");
+                setPost({
+                    title: '',
+                    content: ''
+                });
+                router.push('/board/posts');
+            },
+            onError: async (error) => {
+                console.log("Write error "+error);
+                if (error.response.status === 401) {
+                    console.log("401");
+                    try {
+                        // cookie에 저장된 refresh token으로 access token 재발급
+                        console.log(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`);
+                        const res = await axios.post(
+                            `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
+                            {},
+                            {
+                                withCredentials: true,
+                            }
+                        );
+                        await setAccessToken(res.data.accessToken);
+                        await refetch();
+                    } catch (err) {
+                        if (err.response?.status === 400) {
+                            console.log("400");
+                            setIsLogIn(false);
+                            alert("refreshToken이 만료되었습니다.")
+                            router.push('/user/login');
+                        } else {
+                            console.error(err);
+                            setIsLogIn(false);
+                            router.push('/user/login');
+                        }
+                    }
+                } else {
+                    alert("로그인이 필요합니다.");
+                    setIsLogIn(false);
+                    router.push('/user/login');
+                }
+            },
+            retry: 0,
         }
-    })
+    );
 
     const onSubmit = (e) =>{
         if (post){          
-            const newPost = {
-                title,
-                content,
-                boardId
-            };
+            
 
             sendPost.mutate(newPost);
 
