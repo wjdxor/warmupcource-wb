@@ -4,6 +4,7 @@ import {QueryClient, QueryClientProvider} from "react-query";
 import {ReactQueryDevtools} from "react-query/devtools";
 import Layout from '@/components/layout/layout'
 import {RecoilRoot} from "recoil";
+import LoginAuthCheck from "@/utils/loginAuthCheck";
 
 export default function App({Component, pageProps}) {
     const queryClient = new QueryClient();
@@ -12,7 +13,7 @@ export default function App({Component, pageProps}) {
             <ReactQueryDevtools initialIsOpen={true}/>
             <RecoilRoot>
                 <Layout>
-                    <Component {...pageProps} />
+                    <LoginAuthCheck component={Component} pageProps={pageProps} />
                 </Layout>
             </RecoilRoot>
         </QueryClientProvider>
