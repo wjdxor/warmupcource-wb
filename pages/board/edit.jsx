@@ -3,23 +3,31 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import axios from 'axios';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { accessTokenState } from '@/recoil/auth';
+import { postByIdSelector } from '@/recoil/boardPost';
 
 export default function Edit (){
     const router = useRouter();
     const { query } = useRouter();
-    const editPost = JSON.parse(query.post);
+    const thisId = query.id;
 
     const [post, setPost] = useState({
         title: '',
         content: '',
         id:''
     });
-    
+
+    const editPost = useRecoilValue(postByIdSelector(Number(thisId)));
     const {title, content, id} = post;
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 
+    const newPost = {
+        title,
+        content,
+        id
+    };
+    
     const postSetting = useCallback(() => {
         if(editPost){
             setPost(post => ({
@@ -30,7 +38,7 @@ export default function Edit (){
             }))
         }
     },[])
-
+    
     useEffect(() => {
         postSetting();
     }, [postSetting]);
@@ -44,37 +52,54 @@ export default function Edit (){
         });
     } 
 
-    const putPost = useMutation((newPost) => {
-        axios.put(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST+'/'+newPost.id}`, newPost
-            , {headers: {Authorization: `Bearer ${accessToken}`}})}
-            , {
+    const putPost = useMutation('newPost', async () => {
+        return axios.put(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_POST_POST+'/'+newPost.id}`, newPost
+            , {headers: {Authorization: `Bearer ${accessToken}`}})
+        },
+        {
             onSuccess: () => {
+                console.log("Edit success");
                 setPost({
                     title: '',
                     content: '',
                     id:''
                 });
-
                 router.push('/board/posts');
             },
-            onError: () => {
-                alert("실패");
-            }
-    })
+            onError: async () => {
+                console.log("Edit error");
+                if (error.response.status === 401) {
+                    console.log("401");
+                    try {
+                        const res = await axios.post(
+                            `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
+                            {refreshToken: refreshToken}
+                        );
+                        await setAccessToken(res.data.accessToken);
+                        await refetch();
+                    } catch (err) {
+                        if (err.response?.status === 400) {
+                            console.log("400");
+                            setIsLogIn(false);
+                            router.push('/user/login');
+                        } else {
+                            console.log("else에러");
+                            console.error(err);
+                        }
+                    }
+                } else {
+                    alert("로그인이 필요합니다.");
+                    setIsLogIn(false);
+                    router.push('/user/login');
+                }
+            },
+        }
+    );
 
 
     const onSubmit = (e) =>{
-        if (post.title && post.content){
-            console.log(post)
-            
-            const newPost = {
-                title,
-                content,
-                id
-            };
-
+        if (post){
             putPost.mutate(newPost);
-
         }else{
             console.log("무언가가 없다..!");
         }

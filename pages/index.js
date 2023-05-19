@@ -44,6 +44,10 @@ export default function Home() {
                     )}
                 </div>
             </div>
+            <ul>
+                <li><a href="/error/403">Go 403</a></li>
+                <li><a href="/error/500">Go 500</a></li>
+            </ul>
         </>
     )
 }
