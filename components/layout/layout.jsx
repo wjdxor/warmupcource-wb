@@ -27,7 +27,6 @@ export default function Layout({ children }) {
               Let's go check the list of posts.
             </p>
           </a>
-
           <a
             href="/board/write"
             className={styles.card}

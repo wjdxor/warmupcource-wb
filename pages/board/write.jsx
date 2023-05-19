@@ -85,10 +85,7 @@ export default function Write (){
 
     const onSubmit = (e) =>{
         if (post){          
-            
-
             sendPost.mutate(newPost);
-
         }else{
             console.log("무언가가 없다..!");
         }

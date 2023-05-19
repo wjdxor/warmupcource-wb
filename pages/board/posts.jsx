@@ -9,7 +9,6 @@ import Pagination from '@/components/Pagination';
 import {useRecoilState, useRecoilValue} from "recoil";
 import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
 import {console} from "next/dist/compiled/@edge-runtime/primitives/console";
-import moment from "moment/moment";
 import {boardPosts} from '@/recoil/boardPost';
 
 export default function Posts() {
@@ -28,11 +27,9 @@ export default function Posts() {
 
     const [posts, setPosts] = useRecoilState(boardPosts);
 
+    
     // const {data} = useQuery(["posts"], () => {
     const {isLoading, isError, data, error, refetch} = useQuery(["posts"], async () => {
-            if (moment(expireAt).diff(moment()) < 0) {
-
-            }
             return axios.get(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_GET_POSTS}`
                 , {headers: {Authorization: `Bearer ${accessToken}`}}
             ).then(res => setPosts(res.data))
@@ -123,10 +120,7 @@ export default function Posts() {
                             <tr>
                                 <td>{post.id}</td>
                                 <td style={{textDecoration: 'underline', padding: '0 20px 0 20px'}}>
-                                    <Link href={{
-                                        pathname: './view',
-                                        query: {id: post.id}
-                                    }}
+                                    <Link href={{pathname: './view', query: {id: post.id}}}
                                           as={`./view?${post.id}`}>
                                         {post.title}
                                     </Link>
@@ -138,9 +132,7 @@ export default function Posts() {
                         ))
                     }
                 </table>
-                {posts &&
-                    <Pagination total={posts.length} perPage={perPage}
-                                page={page} setPage={setPage}/>}
+                {posts && <Pagination total={posts.length} perPage={perPage} page={page} setPage={setPage}/>}
             </div>
         </>
     )
