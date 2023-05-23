@@ -8,7 +8,6 @@ import {useState} from 'react';
 import Pagination from '@/components/Pagination';
 import {useRecoilState, useRecoilValue} from "recoil";
 import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
-import {console} from "next/dist/compiled/@edge-runtime/primitives/console";
 import {boardPosts} from '@/recoil/boardPost';
 
 export default function Posts() {
@@ -27,7 +26,7 @@ export default function Posts() {
 
     const [posts, setPosts] = useRecoilState(boardPosts);
 
-    
+
     // const {data} = useQuery(["posts"], () => {
     const {isLoading, isError, data, error, refetch} = useQuery(["posts"], async () => {
             return axios.get(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_GET_POSTS}`
@@ -35,52 +34,7 @@ export default function Posts() {
             ).then(res => setPosts(res.data))
         },
         {
-            // onSuccess: (data) => {
-            //     console.log(data)
-            // },
-
-            onError: async (error) => {
-                console.log("error");
-                if (error.response.status === 401) {
-                    try {
-                        const res = await axios.post(
-                            `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`,
-                            {refreshToken: refreshToken}
-                        );
-                        await setAccessToken(res.data.accessToken);
-                        await refetch();
-                    } catch (err) {
-                        if (err.response.status === 400) {
-                            setIsLogIn(false);
-                            router.push('/user/login');
-                        } else {
-                            console.error(err);
-                        }
-                    }
-                } else {
-                    alert("로그인이 필요합니다.");
-                    setIsLogIn(false);
-                    router.push('/user/login');
-                }
-            },
-            retry: 0,
-            // retry: (failureCount, error) => {
-            //     console.log("retry");
-            //     if (error.response.status === 401) {
-            //         const getNewToken = axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`, {
-            //             refreshToken: refreshToken,
-            //         }).then((res) => {
-            //             setAccessToken(res.data.accessToken);
-            //             return true; // 새로운 토큰으로 다시 시도
-            //         }).catch(() => {
-            //             if (err.response.status === 400) {
-            //                 router.push('/user/login');
-            //             } else {
-            //                 console.error(err);
-            //             }
-            //         });
-            //     }
-            // }
+            retry: false
         }
     );
 
@@ -88,7 +42,7 @@ export default function Posts() {
 
     if (error) return "An error has occurred: " + error.message;
 
-    // console.log(data)
+// console.log(data)
 
     return (
         <>

@@ -6,6 +6,7 @@ import Layout from '@/components/layout/layout'
 import {RecoilRoot} from "recoil";
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from '@/components/errorFallback';
+import LoginAuthCheck from "@/utils/loginAuthCheck";
 
 export default function App({Component, pageProps}) {
     const queryClient = new QueryClient();
@@ -18,10 +19,12 @@ export default function App({Component, pageProps}) {
                     FallbackComponent={ErrorFallback}
                 >
                     <Layout>
-                        <Component {...pageProps} />
+                        <LoginAuthCheck >
+                            <Component {...pageProps} />
+                        </LoginAuthCheck>
                     </Layout>
                 </ErrorBoundary>
             </RecoilRoot>
         </QueryClientProvider>
-    ) 
+    )
 }
