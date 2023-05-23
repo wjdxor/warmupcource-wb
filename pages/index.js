@@ -2,6 +2,7 @@ import styles from '@/styles/Home.module.css'
 import {useRecoilState} from "recoil";
 import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
 import {useEffect, useState} from "react";
+import {Cookies} from "react-cookie";
 
 export default function Home() {
 
@@ -24,6 +25,8 @@ export default function Home() {
         setExpireAt('')
         setIsLogin(false)
         setUserId('')
+        const cookies = new Cookies()
+        cookies.remove('refreshToken')
     }
     return (
         <>
