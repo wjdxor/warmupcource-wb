@@ -5,6 +5,7 @@ import {useRecoilState} from "recoil";
 import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
+import {Cookies} from "react-cookie";
 
 export default function LoginAuthCheck({children}) {
 
@@ -16,6 +17,7 @@ export default function LoginAuthCheck({children}) {
 
     const router = useRouter();
     const currentPath = router.pathname;
+    const cookies = new Cookies()
 
     const initAuth = () => {
         setAccessToken('');
@@ -28,8 +30,11 @@ export default function LoginAuthCheck({children}) {
     useEffect(() => {
         if (currentPath === '/user/login'
             || currentPath === ''
+            || currentPath === '/user/join'
         ) {
-            setExceptPage(true)
+            setExceptPage(true);
+        } else {
+            setExceptPage(false);
         }
     }, [currentPath])
 
@@ -40,7 +45,6 @@ export default function LoginAuthCheck({children}) {
         {
             onError: async (error) => {
                 try {
-                    console.log("refreshToken: " + refreshToken)
                     const res = await axios.post(
                         `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
                         {},
@@ -58,12 +62,14 @@ export default function LoginAuthCheck({children}) {
                     }
                 }
             },
-
-            retry: 0
+            retry: 0,
+            enabled: !exceptPage
         },
     );
 
-    if (!isLoading && !isError || exceptPage) {
+    if (exceptPage) {
+        return children
+    } else if (!isLoading && !isError) {
         return children
     }
 }
