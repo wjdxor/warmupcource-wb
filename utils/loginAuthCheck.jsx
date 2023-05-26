@@ -1,6 +1,5 @@
 import {useQuery} from "react-query";
 import axios from "axios";
-import {console} from "next/dist/compiled/@edge-runtime/primitives/console";
 import {useRecoilState} from "recoil";
 import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
 import {useRouter} from "next/router";
@@ -14,6 +13,7 @@ export default function LoginAuthCheck({children}) {
     const [isLogIn, setIsLogIn] = useRecoilState(isLoggedIn)
     const [expireAt, setExpireAt] = useRecoilState(tokenExpireState)
     const [exceptPage, setExceptPage] = useState(false)
+    const [checkRequiredPath, setCheckRequiredPath] = useState(false)
 
     const router = useRouter();
     const currentPath = router.pathname;
@@ -33,8 +33,10 @@ export default function LoginAuthCheck({children}) {
             || currentPath === '/user/join'
         ) {
             setExceptPage(true);
+            setCheckRequiredPath(false)
         } else {
             setExceptPage(false);
+            setCheckRequiredPath(true)
         }
     }, [currentPath])
 
@@ -63,7 +65,7 @@ export default function LoginAuthCheck({children}) {
                 }
             },
             retry: 0,
-            enabled: !exceptPage
+            enabled: checkRequiredPath
         },
     );
 
