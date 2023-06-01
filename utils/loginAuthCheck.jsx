@@ -29,7 +29,7 @@ export default function LoginAuthCheck({children}) {
     // 로그인 체크를 하지 않을 페이지
     useEffect(() => {
         if (currentPath === '/user/login'
-            || currentPath === ''
+            || currentPath === '/'
             || currentPath === '/user/join'
         ) {
             setExceptPage(true);
