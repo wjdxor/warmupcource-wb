@@ -48,8 +48,9 @@ export default function LoginAuthCheck({children}) {
             onError: async (error) => {
                 try {
                     const res = await axios.post(
-                        `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
-                        {},
+                        // `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
+                        `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`,
+                        {refreshToken: refreshToken},
                         {
                             withCredentials: true,
                         }
