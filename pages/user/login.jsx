@@ -4,7 +4,7 @@ import {useState} from "react";
 import {useMutation} from "react-query";
 import axios from "axios";
 import {useRecoilState, useSetRecoilState} from "recoil";
-import {accessTokenState, refreshTokenState, isLoggedIn, userId, tokenExpireState} from "@/recoil/auth";
+import {accessTokenState, refreshTokenState, isLoggedIn, userId, accessTokenExpireState, refreshTokenExpireState} from "@/recoil/auth";
 import {Cookies} from "react-cookie";
 
 
@@ -15,7 +15,9 @@ export default function Login() {
     const setAccessToken = useSetRecoilState(accessTokenState);
     const setRefreshToken = useSetRecoilState(refreshTokenState);
     const setUserId = useSetRecoilState(userId);
-    const setTokenExpire = useSetRecoilState(tokenExpireState);
+    const setAccessTokenExpire = useSetRecoilState(accessTokenExpireState);
+    const setRefreshTokenExpire = useSetRecoilState(refreshTokenExpireState);
+
     const [loggedIn, setLoggedIn] = useRecoilState(isLoggedIn);
 
     const [loginReg, SetLoginReg] = useState({
@@ -43,7 +45,8 @@ export default function Login() {
                 setAccessToken(data.data.accessToken)
                 setRefreshToken(data.data.refreshToken)
                 setUserId(data.data.userId)
-                setTokenExpire(data.data.accessTokenExpiresAt)
+                setAccessTokenExpire(data.data.accessTokenExpiresAt)
+                setRefreshTokenExpire(data.data.refreshTokenExpiresAt)
                 setLoggedIn(true)
                 cookies.set('refreshToken', data.data.refreshToken, {
                     sameSite: 'strict',
@@ -64,6 +67,7 @@ export default function Login() {
         postLoginReg.mutate()
         console.log("로그인버튼 클릭");
     }
+
     return (
         <>
             <div className={styles.description}>

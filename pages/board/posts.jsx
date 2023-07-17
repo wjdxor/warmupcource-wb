@@ -7,7 +7,7 @@ import Link from 'next/link';
 import {useState} from 'react';
 import Pagination from '@/components/Pagination';
 import {useRecoilState, useRecoilValue} from "recoil";
-import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
+import {accessTokenState, isLoggedIn, refreshTokenState, accessTokenExpireState, refreshTokenExpireState} from "@/recoil/auth";
 import {boardPosts} from '@/recoil/boardPost';
 
 export default function Posts() {
@@ -22,8 +22,8 @@ export default function Posts() {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState)
     const [isLogIn, setIsLogIn] = useRecoilState(isLoggedIn)
     const refreshToken = useRecoilValue(refreshTokenState)
-    const expireAt = useRecoilValue(tokenExpireState)
-
+    const accessTokenExpire = useRecoilValue(accessTokenExpireState)
+    const refreshTokenExpire = useRecoilValue(refreshTokenExpireState)
     const [posts, setPosts] = useRecoilState(boardPosts);
 
 

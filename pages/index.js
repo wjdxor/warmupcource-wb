@@ -1,6 +1,6 @@
 import styles from '@/styles/Home.module.css'
 import {useRecoilState} from "recoil";
-import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
+import {accessTokenState, isLoggedIn, refreshTokenState, accessTokenExpireState, refreshTokenExpireState} from "@/recoil/auth";
 import {useEffect, useState} from "react";
 import {Cookies} from "react-cookie";
 
@@ -8,7 +8,8 @@ export default function Home() {
 
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState)
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState)
-    const [expireAt, setExpireAt] = useRecoilState(tokenExpireState)
+    const [accessTokenExpire, setAccessTokenExpire] = useRecoilState(accessTokenExpireState)
+    const [refreshTokenExpire, setRefreshTokenExpire] = useRecoilState(refreshTokenExpireState)
     const [isLogin, setIsLogin] = useRecoilState(isLoggedIn)
     const [userId, setUserId] = useRecoilState(isLoggedIn)
 
@@ -18,16 +19,19 @@ export default function Home() {
         setMounted(true);
     }, []);
 
-
     const handleLogout = () => {
         setAccessToken('')
         setRefreshToken('')
-        setExpireAt('')
+        setAccessTokenExpire('')
+        setRefreshTokenExpire('')
         setIsLogin(false)
         setUserId('')
         const cookies = new Cookies()
         cookies.remove('refreshToken')
     }
+
+    console.log('accessToken', accessToken)
+
     return (
         <>
             <div className={styles.description}>

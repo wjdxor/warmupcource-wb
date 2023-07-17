@@ -1,7 +1,7 @@
 import {useQuery} from "react-query";
 import axios from "axios";
 import {useRecoilState} from "recoil";
-import {accessTokenState, isLoggedIn, refreshTokenState, tokenExpireState} from "@/recoil/auth";
+import {accessTokenState, isLoggedIn, refreshTokenState, accessTokenExpireState, refreshTokenExpireState} from "@/recoil/auth";
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import {Cookies} from "react-cookie";
@@ -11,7 +11,8 @@ export default function LoginAuthCheck({children}) {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState)
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState)
     const [isLogIn, setIsLogIn] = useRecoilState(isLoggedIn)
-    const [expireAt, setExpireAt] = useRecoilState(tokenExpireState)
+    const [accessTokenExpire, setAccessTokenExpire] = useRecoilState(accessTokenExpireState)
+    const [refreshTokenExpire, setRefreshTokenExpire] = useRecoilState(refreshTokenExpireState)
     const [exceptPage, setExceptPage] = useState(false)
     const [checkRequiredPath, setCheckRequiredPath] = useState(false)
 
@@ -22,6 +23,8 @@ export default function LoginAuthCheck({children}) {
     const initAuth = () => {
         setAccessToken('');
         setRefreshToken('');
+        setAccessTokenExpire('');
+        setRefreshTokenExpire('');
         setIsLogIn(false);
         router.push('/user/login');
     }

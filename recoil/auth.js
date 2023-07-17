@@ -14,8 +14,14 @@ export const refreshTokenState = atom({
     effects_UNSTABLE: [persistAtom]
 })
 
-export const tokenExpireState = atom({
-    key: 'tokenExpire',
+export const accessTokenExpireState = atom({
+    key: 'accessTokenExpire',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})
+
+export const refreshTokenExpireState = atom({
+    key: 'refreshTokenExpire',
     default: '',
     effects_UNSTABLE: [persistAtom]
 })
