@@ -30,8 +30,6 @@ export default function Home() {
         cookies.remove('refreshToken')
     }
 
-    console.log('accessToken', accessToken)
-
     return (
         <>
             <div className={styles.description}>

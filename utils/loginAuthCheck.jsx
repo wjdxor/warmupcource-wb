@@ -3,8 +3,9 @@ import axios from "axios";
 import {useRecoilState} from "recoil";
 import {accessTokenState, isLoggedIn, refreshTokenState, accessTokenExpireState, refreshTokenExpireState} from "@/recoil/auth";
 import {useRouter} from "next/router";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Cookies} from "react-cookie";
+import moment from 'moment'
 
 export default function LoginAuthCheck({children}) {
 
@@ -19,6 +20,7 @@ export default function LoginAuthCheck({children}) {
     const router = useRouter();
     const currentPath = router.pathname;
     const cookies = new Cookies()
+    const now = new Date()
 
     const initAuth = () => {
         setAccessToken('');
@@ -29,49 +31,45 @@ export default function LoginAuthCheck({children}) {
         router.push('/user/login');
     }
 
-    // 로그인 체크를 하지 않을 페이지
-    useEffect(() => {
-        if (currentPath === '/user/login'
-            || currentPath === '/'
-            || currentPath === '/user/join'
-        ) {
-            setExceptPage(true);
-            setCheckRequiredPath(false)
-        } else {
-            setExceptPage(false);
-            setCheckRequiredPath(true)
-        }
-    }, [currentPath])
+    function toLocalDateTimeFormat(date) {
+        let year = date.getFullYear();
+        let month = (date.getMonth() + 1).toString().padStart(2, '0');  // 월은 0부터 시작하므로 1을 더하고, 두 자리 숫자를 유지하기 위해 앞에 '0'을 추가합니다.
+        let day = date.getDate().toString().padStart(2, '0');
+        let hours = date.getHours().toString().padStart(2, '0');
+        let minutes = date.getMinutes().toString().padStart(2, '0');
+        let seconds = date.getSeconds().toString().padStart(2, '0');
 
-    const {data, isLoading, isError, refetch} = useQuery('loginAuthCheck', () => {
-            return axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/validate`
-                , {headers: {Authorization: `Bearer ${accessToken}`}})
-        },
-        {
-            onError: async (error) => {
-                try {
-                    const res = await axios.post(
-                        // `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REFRESH}`,
-                        `${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`,
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    }
+
+    const {data, isLoading, isError, refetch} = useQuery('loginAuthCheck', async () => {
+        // 로그인 확인 제외 페이지
+        if (currentPath === '/'
+            || currentPath === '/user/login'
+            || currentPath === '/user/join'
+            || currentPath === '/error/403'
+            || currentPath === '/error/500'
+        ) {
+            return true
+        } else {
+            if (!accessToken) {
+                return router.push('/user/login')
+            } else if (accessTokenExpire < toLocalDateTimeFormat(now)) { // 어세스토큰 만료시간 지났을 경우
+                if (refreshToken && refreshTokenExpire > toLocalDateTimeFormat(now)) { // 리프레쉬토큰 만료시간이 아직 지나지 않앗을 경우
+                    await axios.post(`${process.env.NEXT_PUBLIC_API_URL + process.env.NEXT_PUBLIC_API_REISSUE}`,
                         {refreshToken: refreshToken},
-                        {
-                            withCredentials: true,
-                        }
-                    )
-                    await setAccessToken(res.data.accessToken);
-                    await refetch();
-                } catch (err) {
+                    ).then((res) => {
+                        setAccessToken(res.data.accessToken)
+                        setAccessTokenExpire(res.data.accessTokenExpiresAt)
+                        refetch()
+                    })
+                } else { // 리프레쉬토큰 만료시간이 지났을 경우
                     initAuth()
-                } finally {
-                    if (!isLoading) {
-                        return children;
-                    }
                 }
-            },
-            retry: 0,
-            enabled: checkRequiredPath
-        },
-    );
+            }
+        }
+    });
+
 
     if (exceptPage) {
         return children

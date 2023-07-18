@@ -61,7 +61,9 @@ export default function Join() {
                         type="text"
                         name="loginId"
                         id="id"
-                        {...register("loginId", {required: true, pattern: /^[a-zA-Z]+$/})}
+                        {...register("loginId", {required: true
+                             // , pattern: /^[a-zA-Z]+$/
+                        })}
                         placeholder="아이디를 입력하세요"
                         style={{padding: '3px', marginBottom: '10px', textAlign: 'center'}}
                     />
@@ -75,7 +77,7 @@ export default function Join() {
                         id="pw"
                         {...register("loginPw", {
                             required: true,
-                            pattern: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+                            // pattern: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
                         })}
                         placeholder="비밀번호를 입력하세요"
                         style={{ padding: '3px', marginBottom: '10px', textAlign: 'center' }}
